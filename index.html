@@ -3,155 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Class Leadership Vote</title>
+  <title>Class Leadership Vote 2026</title>
   <style>
-    :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 40px 20px; }
-    .container { max-width: 520px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-    h1 { margin-top: 0; font-size: 1.5rem; text-align: center; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-weight: 600; margin-bottom: 6px; }
-    input[type="email"], input[type="text"], select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-    button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 1rem; }
-    button:disabled { background: #94a3b8; }
-    #status { margin-top: 16px; text-align: center; font-weight: 600; }
-    .admin-section { margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 20px; }
-    .admin-btn { background: #475569; margin-bottom: 12px; }
-    .hidden { display: none; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; font-size: 0.85rem; }
-    th { background: #f1f5f9; }
-  </style>
-</head>
-<body>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%);
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 14px;
+    }
 
-<div class="container">
-  <h1>Class Leadership Vote</h1>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
 
-  <form id="voteForm">
-    <div class="form-group">
-      <label for="email">School Email</label>
-      <input type="email" id="email" placeholder="student@school.edu" required>
-    </div>
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      box-sizing: border-box;
+    }
 
-    <div class="form-group">
-      <label for="pm">Vote for Prime Minister</label>
-      <input type="text" id="pm" placeholder="Candidate Name" required>
-    </div>
+    .header-icon {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-    <div class="form-group">
-      <label for="mpArea">MP Subject / Category</label>
-      <select id="mpArea" required>
-        <option value="" disabled selected>Select an area...</option>
-        <option value="Sports">Sports</option>
-        <option value="Arts & Culture">Arts & Culture</option>
-        <option value="STEM / Tech">STEM / Tech</option>
-        <option value="Environment & Sustainability">Environment & Sustainability</option>
-        <option value="Academic">Academic</option>
-        <option value="Other">Other / Custom</option>
-      </select>
-    </div>
+    h1 {
+      margin-top: 0;
+      font-size: 1.75rem;
+      text-align: center;
+      color: #1e293b;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
 
-    <div class="form-group">
-      <label for="mp">Vote for MP Candidate</label>
-      <input type="text" id="mp" placeholder="Candidate Name for selected area" required>
-    </div>
+    p.subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+      margin-top: -5px;
+    }
 
-    <button type="submit" id="submitBtn">Cast Vote</button>
-  </form>
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-  <div id="status"></div>
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: #334155;
+    }
 
-  <!-- Admin Hidden Section -->
-  <div class="admin-section">
-    <button type="button" class="admin-btn" onclick="fetchAdminData()">Admin Results Portal</button>
-    <div id="adminPanel" class="hidden">
-      <h3>Live Vote Entries</h3>
-      <div style="overflow-x: auto;">
-        <table id="resultsTable"></table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Replace this placeholder with your deployed Apps Script Web App URL (/exec)
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeKplZAsAarvEhbR1-qx1uNnqHz3tfc6HHOLHCF7pFnvvQR4LzIPmxgL_x57wUJerr/exec";
-
-  document.getElementById('voteForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const status = document.getElementById('status');
-
-    btn.disabled = true;
-    status.innerText = "Submitting your vote...";
-
-    const payload = {
-      email: document.getElementById('email').value.trim(),
-      pm: document.getElementById('pm').value.trim(),
-      mpArea: document.getElementById('mpArea').value,
-      mp: document.getElementById('mp').value.trim()
-    };
-
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === 'success') {
-        status.style.color = 'green';
-        status.innerText = "Vote submitted successfully!";
-        document.getElementById('voteForm').reset();
-      } else {
-        throw new Error(data.message);
-      }
-    })
-    .catch(err => {
-      status.style.color = 'red';
-      status.innerText = "Error submitting vote. Please try again.";
-      console.error(err);
-    })
-    .finally(() => {
-      btn.disabled = false;
-    });
-  });
-
-  function fetchAdminData() {
-    const secret = prompt("Enter Admin Password:");
-    if (!secret) return;
-
-    fetch(`${SCRIPT_URL}?pass=${encodeURIComponent(secret)}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "error") {
-          alert("Access Denied: Incorrect Password");
-          return;
-        }
-
-        const table = document.getElementById('resultsTable');
-        table.innerHTML = "";
-
-        data.data.forEach((row, index) => {
-          const tr = document.createElement('tr');
-          row.forEach(cell => {
-            const cellElement = index === 0 ? document.createElement('th') : document.createElement('td');
-            cellElement.innerText = cell;
-            tr.appendChild(cellElement);
-          });
-          table.appendChild(tr);
-        });
-
-        document.getElementById('adminPanel').classList.remove('hidden');
-      })
-      .catch(err => {
-        alert("Failed to fetch admin data.");
-        console.error(err);
-      });
-  }
-</script>
-
-</body>
-</html>
+    input[type="email"], 
+    input[type="text"], 
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 8

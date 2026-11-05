@@ -313,7 +313,11 @@
           const tr = document.createElement('tr');
           row.forEach(cell => {
             const cellElement = index === 0 ? document.createElement('th') : document.createElement('td');
-            cellElement.innerText = cell;
+            if (index > 0 && cell && cell.toString().includes('T') && cell.toString().includes('Z')) {
+              cellElement.innerText = new Date(cell).toLocaleString();
+            } else {
+              cellElement.innerText = cell;
+            }
             tr.appendChild(cellElement);
           });
           table.appendChild(tr);

@@ -80,4 +80,253 @@
       width: 100%;
       padding: 12px 16px;
       border: 1.5px solid var(--border);
-      border-radius: 8
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 1rem;
+      color: var(--text-main);
+      background-color: #f8fafc;
+      transition: all 0.2s ease;
+    }
+
+    input[type="email"]:focus, 
+    input[type="text"]:focus, 
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    button.submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    button.submit-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    button.submit-btn:active {
+      transform: scale(0.99);
+    }
+
+    button.submit-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    #status {
+      margin-top: 18px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .admin-section {
+      margin-top: 35px;
+      border-top: 1px solid var(--border);
+      padding-top: 25px;
+      text-align: center;
+    }
+
+    .admin-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .admin-btn:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+      border-color: #cbd5e1;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .table-wrapper {
+      margin-top: 20px;
+      max-height: 350px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-icon">🗳️</div>
+  <h1>Class Leadership Vote</h1>
+  <p class="subtitle">Cast your ballot securely for the upcoming term.</p>
+
+  <form id="voteForm">
+    <div class="form-group">
+      <label for="email">School Email Address</label>
+      <input type="email" id="email" placeholder="e.g. name@school.edu" required>
+    </div>
+
+    <div class="form-group">
+      <label for="pm">Vote for Prime Minister</label>
+      <input type="text" id="pm" placeholder="Enter candidate name" required>
+    </div>
+
+    <div class="form-group">
+      <label for="mpArea">MP Portfolio / Area</label>
+      <select id="mpArea" required>
+        <option value="" disabled selected>Select an area...</option>
+        <option value="Sports">Sports</option>
+        <option value="Arts & Culture">Arts & Culture</option>
+        <option value="STEM / Tech">STEM / Tech</option>
+        <option value="Environment & Sustainability">Environment & Sustainability</option>
+        <option value="Academic">Academic</option>
+        <option value="Other">Other / Custom</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="mp">Vote for MP Candidate</label>
+      <input type="text" id="mp" placeholder="Enter candidate name" required>
+    </div>
+
+    <button type="submit" id="submitBtn" class="submit-btn">Submit Official Vote</button>
+  </form>
+
+  <div id="status"></div>
+
+  <!-- Admin Panel -->
+  <div class="admin-section">
+    <button type="button" class="admin-btn" onclick="fetchAdminData()">🔒 Admin Results Portal</button>
+    <div id="adminPanel" class="hidden">
+      <h3 style="text-align: left; font-size: 1.1rem; margin-top: 20px;">Live Vote Entries</h3>
+      <div class="table-wrapper">
+        <table id="resultsTable"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeKplZAsAarvEhbR1-qx1uNnqHz3tfc6HHOLHCF7pFnvvQR4LzIPmxgL_x57wUJerr/exec";
+
+  document.getElementById('voteForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+
+    btn.disabled = true;
+    status.style.color = "#4f46e5";
+    status.innerText = "Encrypting & submitting vote...";
+
+    const payload = {
+      email: document.getElementById('email').value.trim(),
+      pm: document.getElementById('pm').value.trim(),
+      mpArea: document.getElementById('mpArea').value,
+      mp: document.getElementById('mp').value.trim()
+    };
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        status.style.color = '#16a34a';
+        status.innerText = "✓ Vote recorded successfully!";
+        document.getElementById('voteForm').reset();
+      } else {
+        throw new Error(data.message);
+      }
+    })
+    .catch(err => {
+      status.style.color = '#dc2626';
+      status.innerText = "❌ Error submitting vote. Please try again.";
+      console.error(err);
+    })
+    .finally(() => {
+      btn.disabled = false;
+    });
+  });
+
+  function fetchAdminData() {
+    const secret = prompt("Enter Admin Password:");
+    if (!secret) return;
+
+    fetch(`${SCRIPT_URL}?pass=${encodeURIComponent(secret)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "error") {
+          alert("Access Denied: Incorrect Password");
+          return;
+        }
+
+        const table = document.getElementById('resultsTable');
+        table.innerHTML = "";
+
+        data.data.forEach((row, index) => {
+          const tr = document.createElement('tr');
+          row.forEach(cell => {
+            const cellElement = index === 0 ? document.createElement('th') : document.createElement('td');
+            cellElement.innerText = cell;
+            tr.appendChild(cellElement);
+          });
+          table.appendChild(tr);
+        });
+
+        document.getElementById('adminPanel').classList.remove('hidden');
+      })
+      .catch(err => {
+        alert("Failed to fetch admin data.");
+        console.error(err);
+      });
+  }
+</script>
+
+</body>
+</html>
